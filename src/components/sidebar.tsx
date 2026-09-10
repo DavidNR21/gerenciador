@@ -47,14 +47,13 @@ export default function Sidebar({ usuario }: { usuario: Usuario }) {
     router.refresh();
   }
 
-  const usadoGb = 341;
-  const totalGb = 500;
-  const pct = Math.round((usadoGb / totalGb) * 100);
+  // O medidor de espaço saiu daqui: o sistema guarda links, não
+  // arquivos, então não existe espaço ocupado para medir.
 
   return (
     <aside
       className={`relative flex shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200 ease-out ${
-        aberta ? "w-62.5" : "w-19"
+        aberta ? "w-[250px]" : "w-[76px]"
       }`}
     >
       <div
@@ -100,7 +99,7 @@ export default function Sidebar({ usuario }: { usuario: Usuario }) {
               }`}
             >
               <Icone
-                className={`size-4.75 shrink-0 ${
+                className={`size-[19px] shrink-0 ${
                   selecionado ? "text-iris-soft" : "text-faint group-hover:text-muted"
                 }`}
               />
@@ -111,27 +110,8 @@ export default function Sidebar({ usuario }: { usuario: Usuario }) {
       </nav>
 
       <div className="mt-auto">
-        {aberta && (
-          <div className="px-5 pb-5">
-            <div className="mb-2 flex items-baseline justify-between">
-              <span className="font-mono text-[10px] tracking-[0.15em] text-faint uppercase">
-                Espaço
-              </span>
-              <span className="text-[11.5px] text-muted">
-                {usadoGb} de {totalGb} GB
-              </span>
-            </div>
-            <div className="h-1 overflow-hidden rounded-full bg-field">
-              <div
-                className="h-full rounded-full bg-linear-to-r from-iris to-iris-soft"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-          </div>
-        )}
-
         <div
-          className={`flex h-17 items-center border-t border-line ${
+          className={`flex h-[68px] items-center border-t border-line ${
             aberta ? "gap-3 px-4" : "justify-center"
           }`}
         >
@@ -156,7 +136,7 @@ export default function Sidebar({ usuario }: { usuario: Usuario }) {
                 title="Sair"
                 className="grid size-8 shrink-0 place-items-center rounded-lg text-faint transition-colors duration-150 hover:bg-white/5 hover:text-alert disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-iris-soft"
               >
-                <IconLogout className="size-4.25" />
+                <IconLogout className="size-[17px]" />
               </button>
             </>
           )}

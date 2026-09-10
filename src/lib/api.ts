@@ -51,19 +51,27 @@ export async function api(
 }
 
 /**
+ * Busca da API em componente de servidor, já com o token do cookie.
+ * Devolve null em qualquer falha — quem chama decide o que mostrar.
+ */
+export async function buscarNoServidor<T>(caminho: string): Promise<T | null> {
+  const token = (await cookies()).get(COOKIE)?.value;
+  if (!token) return null;
+
+  try {
+    const r = await api(caminho, { token });
+    if (!r.ok) return null;
+    return (await r.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Busca o usuário logado. Use em componentes de servidor.
  * Devolve null se não houver cookie, se o token expirou ou se a conta
  * foi desativada depois que o token foi emitido.
  */
 export async function usuarioLogado(): Promise<Usuario | null> {
-  const token = (await cookies()).get(COOKIE)?.value;
-  if (!token) return null;
-
-  try {
-    const r = await api("/auth/eu", { token });
-    if (!r.ok) return null;
-    return (await r.json()) as Usuario;
-  } catch {
-    return null;
-  }
+  return buscarNoServidor<Usuario>("/auth/eu");
 }

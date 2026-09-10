@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 
 import { api, ErroApi } from "@/lib/cliente";
 import type { Item, TipoItem } from "@/lib/tipos";
-import Dialogo from "./dialogo";
+import Dialogo from "../ui/dialogo";
 import {
   BotaoNeutro,
   BotaoPrimario,
   Campo,
   Erro,
   estiloCampo,
-} from "./campos";
+} from "../ui/campos";
 
 type Props = {
   aberto: boolean;
@@ -45,6 +45,11 @@ export default function FormItem({
   const [favorito, setFavorito] = useState(item?.favorito ?? false);
 
   // Em MB porque ninguém digita byte na mão. Convertido na hora de enviar.
+  // Em minutos, pelo mesmo motivo do tamanho em MB
+  const [duracaoMin, setDuracaoMin] = useState(
+    item?.duracao_seg ? String(Math.round(item.duracao_seg / 60)) : "",
+  );
+
   const [tamanhoMb, setTamanhoMb] = useState(
     item?.tamanho_bytes ? String(+(item.tamanho_bytes / 1024 / 1024).toFixed(1)) : "",
   );
@@ -106,6 +111,7 @@ export default function FormItem({
           tamanho_bytes: tamanhoMb
             ? Math.round(Number(tamanhoMb) * 1024 * 1024)
             : null,
+          duracao_seg: duracaoMin ? Math.round(Number(duracaoMin) * 60) : null,
           ...(editando ? {} : { colecao_id: pastaId }),
         };
 
@@ -240,6 +246,24 @@ export default function FormItem({
               </Campo>
             )}
 
+            {tipo === "video" && (
+              <Campo
+                rotulo="Duração em minutos"
+                id="duracao"
+                dica="Opcional. Aparece no card."
+              >
+                <input
+                  id="duracao"
+                  type="number"
+                  min={0}
+                  value={duracaoMin}
+                  onChange={(e) => setDuracaoMin(e.target.value)}
+                  placeholder="24"
+                  className={estiloCampo}
+                />
+              </Campo>
+            )}
+
             {tipo === "arquivo" && (
               <Campo
                 rotulo="Tamanho em MB"
@@ -357,4 +381,3 @@ export default function FormItem({
     </Dialogo>
   );
 }
-

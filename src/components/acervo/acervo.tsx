@@ -20,13 +20,21 @@ import {
   IconTrash,
   IconVideo,
 } from "../icons";
-import Dialogo from "./dialogo";
+import Dialogo from "../ui/dialogo";
 import FormItem from "./form-item";
 import LeitorNota from "./leitor-nota";
+import PlayerVideo from "./player-video";
 import Visualizador from "./visualizador";
-import { BotaoNeutro, BotaoPrimario, Campo, Erro, estiloCampo } from "./campos";
+import { BotaoNeutro, BotaoPrimario, Campo, Erro, estiloCampo } from "../ui/campos";
 
 const POR_PAGINA = 24;
+
+function formatarDuracao(segundos: number): string {
+  const h = Math.floor(segundos / 3600);
+  const m = Math.floor((segundos % 3600) / 60);
+  if (h > 0) return `${h}h${String(m).padStart(2, "0")}`;
+  return `${m} min`;
+}
 
 function formatarTamanho(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -101,8 +109,10 @@ export default function Acervo({ tipo, titulo, rota, pastaId }: Props) {
       else busca.set("raiz", "true");
 
       const [listaPastas, listaItens, pasta] = await Promise.all([
+        // O tipo é essencial: sem ele, uma pasta criada em Fotos
+        // apareceria também em Vídeos, Arquivos e Notas.
         api.get<Colecao[]>(
-          `/colecoes${pastaId ? `?pai_id=${pastaId}` : ""}`,
+          `/colecoes?tipo=${tipo}${pastaId ? `&pai_id=${pastaId}` : ""}`,
         ),
         api.get<Pagina<Item>>(`/itens?${busca}`),
         pastaId ? api.get<Colecao>(`/colecoes/${pastaId}`) : Promise.resolve(null),
@@ -186,6 +196,10 @@ export default function Acervo({ tipo, titulo, rota, pastaId }: Props) {
     }
     if (tipo === "nota") {
       setLendo(item);
+      return;
+    }
+    if (tipo === "video") {
+      setVisualizando(indice);
       return;
     }
     // Arquivo abre em outra aba. Se o host mandar cabeçalho de download,
@@ -340,6 +354,8 @@ export default function Acervo({ tipo, titulo, rota, pastaId }: Props) {
                   </p>
                   <p className="mt-0.5 text-[11.5px] text-faint">
                     {item.extensao.toUpperCase()}
+                    {item.duracao_seg !== null &&
+                      ` · ${formatarDuracao(item.duracao_seg)}`}
                     {item.tamanho_bytes !== null &&
                       ` · ${formatarTamanho(item.tamanho_bytes)}`}
                     {item.ordem !== null && ` · #${item.ordem}`}
@@ -459,6 +475,15 @@ export default function Acervo({ tipo, titulo, rota, pastaId }: Props) {
           </div>
         </form>
       </Dialogo>
+
+      {tipo === "video" && (
+        <PlayerVideo
+          itens={itens}
+          indice={visualizando}
+          aoMudar={setVisualizando}
+          aoFechar={() => setVisualizando(null)}
+        />
+      )}
 
       {tipo === "nota" && (
         <LeitorNota item={lendo} aoFechar={() => setLendo(null)} />

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 
 import { api, ErroApi } from "@/lib/cliente";
 import type { Item } from "@/lib/tipos";
-import Dialogo from "./dialogo";
-import { Erro } from "./campos";
+import Dialogo from "../ui/dialogo";
+import { Erro } from "../ui/campos";
 import { IconDownload } from "../icons";
 
 type Conteudo = {
@@ -100,7 +100,7 @@ export default function LeitorNota({
               rel="noreferrer"
               className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[12.5px] text-muted transition-colors hover:bg-white/5 hover:text-cream"
             >
-              <IconDownload className="size-3.75" />
+              <IconDownload className="size-[15px]" />
               Baixar
             </a>
           </div>

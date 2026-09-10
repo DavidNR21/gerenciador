@@ -48,3 +48,14 @@ export type Pagina<T> = {
   por_pagina: number;
   paginas: number;
 };
+
+export type Resumo = {
+  videos: number;
+  imagens: number;
+  arquivos: number;
+  notas: number;
+  pastas: number;
+  links_mortos: number;
+  recentes: Item[];
+};
+
